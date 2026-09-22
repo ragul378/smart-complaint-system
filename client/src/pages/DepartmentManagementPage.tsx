@@ -11,9 +11,20 @@ interface Department {
   staff_count: number;
 }
 
+const DEFAULT_DEPARTMENTS: Department[] = [
+  { id: 1, name: 'IT Support', description: 'Computers, Wi-Fi, networks, software, and laboratory systems', status: 'ACTIVE', staff_count: 1 },
+  { id: 2, name: 'Electrical', description: 'Power lines, generators, lights, switches, and wiring', status: 'ACTIVE', staff_count: 1 },
+  { id: 3, name: 'Maintenance', description: 'Plumbing, carpentry, masonry, painting, and structural repairs', status: 'ACTIVE', staff_count: 1 },
+  { id: 4, name: 'Security', description: 'Campus guards, gate management, CCTV, and safety hazards', status: 'ACTIVE', staff_count: 1 },
+  { id: 5, name: 'Housekeeping', description: 'Cleaning, sanitation, waste disposal, and hygiene', status: 'ACTIVE', staff_count: 1 },
+  { id: 6, name: 'Transport', description: 'Buses, parking, vehicles, and shuttle services', status: 'ACTIVE', staff_count: 0 },
+  { id: 7, name: 'Hostel', description: 'Dormitory amenities, room furniture, and hostel facilities', status: 'ACTIVE', staff_count: 0 },
+  { id: 8, name: 'Administration', description: 'Academic records, billing, documentation, and office services', status: 'ACTIVE', staff_count: 0 },
+];
+
 export const DepartmentManagementPage: React.FC = () => {
-  const [departments, setDepartments] = useState<Department[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [departments, setDepartments] = useState<Department[]>(DEFAULT_DEPARTMENTS);
+  const [loading, setLoading] = useState(false);
 
   // Modal State
   const [isOpen, setIsOpen] = useState(false);
@@ -22,10 +33,11 @@ export const DepartmentManagementPage: React.FC = () => {
   const [description, setDescription] = useState('');
 
   const fetchDepartments = async () => {
-    setLoading(true);
     try {
       const res = await api.get<{ departments: Department[] }>('/departments');
-      setDepartments(res.departments || []);
+      if (res.departments && res.departments.length > 0) {
+        setDepartments(res.departments);
+      }
     } catch (err) {
       console.error('Failed to load departments');
     } finally {

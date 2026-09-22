@@ -40,9 +40,33 @@ interface CreateComplaintPageProps {
   onNavigate: (page: string, params?: any) => void;
 }
 
+const DEFAULT_CATEGORIES: Category[] = [
+  { id: 1, name: 'Internet / Network', description: 'Wi-Fi connectivity, LAN ports, and router outages', default_sla: 12 },
+  { id: 2, name: 'Electrical', description: 'Short circuits, power trips, broken lights, and socket issues', default_sla: 12 },
+  { id: 3, name: 'Plumbing', description: 'Water leaks, clogged drains, tap repairs, and tank overflow', default_sla: 24 },
+  { id: 4, name: 'Infrastructure', description: 'Cracked walls, broken furniture, doors, windows, and ceiling', default_sla: 48 },
+  { id: 5, name: 'Cleaning & Sanitation', description: 'Unclean washrooms, garbage accumulation, and pest control', default_sla: 24 },
+  { id: 6, name: 'Security & Safety', description: 'Unauthorized entry, missing equipment, broken gates, hazards', default_sla: 4 },
+  { id: 7, name: 'Canteen / Food', description: 'Food quality, hygiene in mess, drinking water dispensers', default_sla: 12 },
+  { id: 8, name: 'Transportation', description: 'Bus delays, parking space blockage, shuttle service issues', default_sla: 24 },
+  { id: 9, name: 'Hostel / Accommodation', description: 'Bed allotment, hot water availability, quiet hours compliance', default_sla: 24 },
+  { id: 10, name: 'Academic & Administration', description: 'Classroom projectors, fee receipts, certificate issuance', default_sla: 48 },
+];
+
+const DEFAULT_DEPARTMENTS: Department[] = [
+  { id: 1, name: 'IT Support' },
+  { id: 2, name: 'Electrical' },
+  { id: 3, name: 'Maintenance' },
+  { id: 4, name: 'Security' },
+  { id: 5, name: 'Housekeeping' },
+  { id: 6, name: 'Transport' },
+  { id: 7, name: 'Hostel' },
+  { id: 8, name: 'Administration' },
+];
+
 export const CreateComplaintPage: React.FC<CreateComplaintPageProps> = ({ onNavigate }) => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [departments, setDepartments] = useState<Department[]>([]);
+  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
+  const [departments, setDepartments] = useState<Department[]>(DEFAULT_DEPARTMENTS);
 
   // Form State
   const [title, setTitle] = useState('');

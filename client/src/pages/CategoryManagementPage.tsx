@@ -11,9 +11,22 @@ interface Category {
   status: 'ACTIVE' | 'INACTIVE';
 }
 
+const DEFAULT_CATEGORIES: Category[] = [
+  { id: 1, name: 'Internet / Network', description: 'Wi-Fi connectivity, LAN ports, and router outages', default_sla: 12, status: 'ACTIVE' },
+  { id: 2, name: 'Electrical', description: 'Short circuits, power trips, broken lights, and socket issues', default_sla: 12, status: 'ACTIVE' },
+  { id: 3, name: 'Plumbing', description: 'Water leaks, clogged drains, tap repairs, and tank overflow', default_sla: 24, status: 'ACTIVE' },
+  { id: 4, name: 'Infrastructure', description: 'Cracked walls, broken furniture, doors, windows, and ceiling', default_sla: 48, status: 'ACTIVE' },
+  { id: 5, name: 'Cleaning & Sanitation', description: 'Unclean washrooms, garbage accumulation, and pest control', default_sla: 24, status: 'ACTIVE' },
+  { id: 6, name: 'Security & Safety', description: 'Unauthorized entry, missing equipment, broken gates, hazards', default_sla: 4, status: 'ACTIVE' },
+  { id: 7, name: 'Canteen / Food', description: 'Food quality, hygiene in mess, drinking water dispensers', default_sla: 12, status: 'ACTIVE' },
+  { id: 8, name: 'Transportation', description: 'Bus delays, parking space blockage, shuttle service issues', default_sla: 24, status: 'ACTIVE' },
+  { id: 9, name: 'Hostel / Accommodation', description: 'Bed allotment, hot water availability, quiet hours compliance', default_sla: 24, status: 'ACTIVE' },
+  { id: 10, name: 'Academic & Administration', description: 'Classroom projectors, fee receipts, certificate issuance', default_sla: 48, status: 'ACTIVE' },
+];
+
 export const CategoryManagementPage: React.FC = () => {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
+  const [loading, setLoading] = useState(false);
 
   // Modal State
   const [isOpen, setIsOpen] = useState(false);
@@ -23,10 +36,11 @@ export const CategoryManagementPage: React.FC = () => {
   const [defaultSla, setDefaultSla] = useState(24);
 
   const fetchCategories = async () => {
-    setLoading(true);
     try {
       const res = await api.get<{ categories: Category[] }>('/categories');
-      setCategories(res.categories || []);
+      if (res.categories && res.categories.length > 0) {
+        setCategories(res.categories);
+      }
     } catch (err) {
       console.error('Failed to load categories');
     } finally {

@@ -227,6 +227,75 @@ async function initDb() {
     );
   `);
 
+  // Auto-populate default categories and departments if empty
+  try {
+    const deptCount = get('SELECT COUNT(*) as cnt FROM departments');
+    if (!deptCount || deptCount.cnt === 0) {
+      console.log('Auto-populating default departments...');
+      const departmentsData = [
+        { name: 'IT Support', description: 'Computers, Wi-Fi, networks, software, and laboratory systems' },
+        { name: 'Electrical', description: 'Power lines, generators, lights, switches, and wiring' },
+        { name: 'Maintenance', description: 'Plumbing, carpentry, masonry, painting, and structural repairs' },
+        { name: 'Security', description: 'Campus guards, gate management, CCTV, and safety hazards' },
+        { name: 'Housekeeping', description: 'Cleaning, sanitation, waste disposal, and hygiene' },
+        { name: 'Transport', description: 'Buses, parking, vehicles, and shuttle services' },
+        { name: 'Hostel', description: 'Dormitory amenities, room furniture, and hostel facilities' },
+        { name: 'Administration', description: 'Academic records, billing, documentation, and office services' },
+      ];
+      departmentsData.forEach(d => {
+        run('INSERT INTO departments (name, description, status) VALUES (?, ?, "ACTIVE")', [d.name, d.description]);
+      });
+    }
+
+    const catCount = get('SELECT COUNT(*) as cnt FROM categories');
+    if (!catCount || catCount.cnt === 0) {
+      console.log('Auto-populating default categories...');
+      const categoriesData = [
+        { name: 'Internet / Network', description: 'Wi-Fi connectivity, LAN ports, and router outages', default_sla: 12 },
+        { name: 'Electrical', description: 'Short circuits, power trips, broken lights, and socket issues', default_sla: 12 },
+        { name: 'Plumbing', description: 'Water leaks, clogged drains, tap repairs, and tank overflow', default_sla: 24 },
+        { name: 'Infrastructure', description: 'Cracked walls, broken furniture, doors, windows, and ceiling', default_sla: 48 },
+        { name: 'Cleaning & Sanitation', description: 'Unclean washrooms, garbage accumulation, and pest control', default_sla: 24 },
+        { name: 'Security & Safety', description: 'Unauthorized entry, missing equipment, broken gates, hazards', default_sla: 4 },
+        { name: 'Canteen / Food', description: 'Food quality, hygiene in mess, drinking water dispensers', default_sla: 12 },
+        { name: 'Transportation', description: 'Bus delays, parking space blockage, shuttle service issues', default_sla: 24 },
+        { name: 'Hostel / Accommodation', description: 'Bed allotment, hot water availability, quiet hours compliance', default_sla: 24 },
+        { name: 'Academic & Administration', description: 'Classroom projectors, fee receipts, certificate issuance', default_sla: 48 },
+      ];
+      categoriesData.forEach(c => {
+        run('INSERT INTO categories (name, description, default_sla, status) VALUES (?, ?, ?, "ACTIVE")', [c.name, c.description, c.default_sla]);
+      });
+    }
+
+    const userCount = get('SELECT COUNT(*) as cnt FROM users');
+    if (!userCount || userCount.cnt === 0) {
+      console.log('Auto-populating default demo users...');
+      const bcrypt = require('bcryptjs');
+      const adminPassHash = bcrypt.hashSync('admin123', 10);
+      const staffPassHash = bcrypt.hashSync('staff123', 10);
+      const userPassHash = bcrypt.hashSync('user123', 10);
+
+      run(
+        'INSERT INTO users (name, email, phone, password_hash, role, status) VALUES (?, ?, ?, ?, ?, "ACTIVE")',
+        ['System Administrator', 'admin@example.com', '+1-555-0100', adminPassHash, 'ADMIN']
+      );
+      run(
+        'INSERT INTO users (name, email, phone, password_hash, role, department_id, status) VALUES (?, ?, ?, ?, "STAFF", 1, "ACTIVE")',
+        ['IT Support Staff', 'staff@example.com', '+1-555-0101', staffPassHash]
+      );
+      run(
+        'INSERT INTO users (name, email, phone, password_hash, role, department_id, status) VALUES (?, ?, ?, ?, "STAFF", 2, "ACTIVE")',
+        ['Electrical Staff', 'staff.elec@example.com', '+1-555-0102', staffPassHash]
+      );
+      run(
+        'INSERT INTO users (name, email, phone, password_hash, role, status) VALUES (?, ?, ?, ?, "USER", "ACTIVE")',
+        ['Demo User', 'user@example.com', '+1-555-0200', userPassHash]
+      );
+    }
+  } catch (seedErr) {
+    console.warn('Auto-seed warning:', seedErr.message);
+  }
+
   saveDb();
   console.log('Database initialized successfully.');
 }
