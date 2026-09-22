@@ -1,6 +1,5 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL
-  ? `${import.meta.env.VITE_API_URL.replace(/\/$/, '')}/api`
-  : '/api';
+const envApiUrl = typeof import.meta !== 'undefined' && (import.meta as any).env ? (import.meta as any).env.VITE_API_URL : undefined;
+const API_BASE_URL = envApiUrl ? `${envApiUrl.replace(/\/$/, '')}/api` : '/api';
 
 export function getAuthToken(): string | null {
   return localStorage.getItem('token');
